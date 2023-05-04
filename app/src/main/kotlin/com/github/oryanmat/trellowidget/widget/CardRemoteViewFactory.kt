@@ -5,6 +5,7 @@ import android.content.Intent
 import android.graphics.Color
 import android.graphics.Color.*
 import android.net.Uri
+import android.util.Log
 import android.view.View
 import android.widget.RemoteViews
 import android.widget.RemoteViewsService
@@ -23,36 +24,54 @@ import com.github.oryanmat.trellowidget.util.TrelloAPIUtil
 import com.github.oryanmat.trellowidget.util.color.colors
 import com.github.oryanmat.trellowidget.util.color.dim
 import com.github.oryanmat.trellowidget.util.getCardForegroundColor
-import com.github.oryanmat.trellowidget.util.getList
+import com.github.oryanmat.trellowidget.util.getSelectedLists
 import java.util.*
+import kotlin.collections.ArrayList
 
 class CardRemoteViewFactory(private val context: Context,
                             private val appWidgetId: Int) : RemoteViewsService.RemoteViewsFactory {
-    private var cards: List<Card> = ArrayList()
+    private var cards: ArrayList<Card> = ArrayList()
+    private var listNames: ArrayList<String> = ArrayList()
+    private var hasMoreThanOneList: Boolean = false
     @ColorInt private var color = 0
 
     override fun onDataSetChanged() {
-        var list = context.getList(appWidgetId)
-        list = TrelloAPIUtil.instance.getCards(list)
-        color = context.getCardForegroundColor()
+        cards = ArrayList()
+        listNames = ArrayList()
+        val lists = context.getSelectedLists(appWidgetId)
+        var numLists = 0
+        for(l in lists.lists) {
+            val list = TrelloAPIUtil.instance.getCards(l)
+            color = context.getCardForegroundColor()
 
-        if (BoardList.ERROR != list.id) {
-            cards = list.cards
-        } else {
-            color = color.dim()
+            if (BoardList.ERROR != list.id) {
+                numLists += 1
+                for(c in list.cards){
+                    listNames.add(list.name)
+                }
+                cards.addAll(list.cards)
+            } else {
+                color = color.dim()
+            }
         }
+        hasMoreThanOneList = numLists > 1
     }
 
     override fun getViewAt(position: Int): RemoteViews {
         val card = cards[position]
+        val listName = listNames[position]
         val views = RemoteViews(context.packageName, R.layout.card)
         setLabels(views, card)
         setTitle(views, card)
         setBadges(views, card)
         setDivider(views)
         setOnClickFillInIntent(views, card)
-
+        if(hasMoreThanOneList) setListName(views, listName) else setListName(views, "")
         return views
+    }
+
+    private fun setListName(views: RemoteViews, listName: String){
+        setTextView(context, views, R.id.card_list_name, listName, color, R.dimen.card_badges_text)
     }
 
     private fun setOnClickFillInIntent(views: RemoteViews, card: Card) {

@@ -32,6 +32,24 @@ data class BoardList(
     }
 }
 
+data class BoardListList(
+        val lists: List<BoardList> = emptyList()){
+    override fun toString(): String {
+        var ret = "Selected Boards: "
+        for(b in lists){
+            ret += "$b, "
+        }
+        return ret
+    }
+
+    companion object {
+        val BOARD_LIST_LIST_TYPE : Type = object : TypeToken<List<BoardList>>() {}.type
+        val NULL_JSON = """{"lists": []}"""
+
+        fun error(name: String) = BoardListList()
+    }
+}
+
 data class Card(
         val id: String = "",
         val name: String = "",

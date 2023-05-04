@@ -43,10 +43,11 @@
                 android:paddingTop="8dp"
                 android:text="@string/list" />
 
-            <Spinner
-                android:id="@+id/listSpinner"
+            <ListView
+                android:id="@+id/listListView"
                 android:layout_width="fill_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:choiceMode="multipleChoice" />
         </LinearLayout>
 
         <LinearLayout

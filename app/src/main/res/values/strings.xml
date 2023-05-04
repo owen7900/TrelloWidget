@@ -18,6 +18,7 @@
     <string name="config">Change widgets list</string>
 
     <string name="card_title">Card title</string>
+    <string name="card_list">Card list</string>
 
     <string name="card_subscribed_desc">You are subscribed to this card</string>
     <string name="card_desc_desc">Card has description</string>

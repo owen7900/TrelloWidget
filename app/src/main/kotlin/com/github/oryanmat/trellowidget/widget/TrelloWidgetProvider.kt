@@ -47,14 +47,14 @@ class TrelloWidgetProvider : AppWidgetProvider() {
 
     private fun updateTitleBar(appWidgetId: Int, context: Context, views: RemoteViews) {
         val board = context.getBoard(appWidgetId)
-        val list = context.getList(appWidgetId)
+        val lists = context.getSelectedLists(appWidgetId)
         @ColorInt val foregroundColor = context.getTitleForegroundColor()
 
         setBackgroundColor(views, R.id.title_bar, context.getTitleBackgroundColor())
         views.setViewVisibility(R.id.board_name,
                 if (context.displayBoardName()) View.VISIBLE else View.GONE)
         setTextView(context, views, R.id.board_name, board.name + " / ", foregroundColor, R.dimen.widget_title_text)
-        setTextView(context, views, R.id.list_name, list.name, foregroundColor, R.dimen.widget_title_text)
+        setTextView(context, views, R.id.list_name, if (lists.lists.size == 1) lists.lists[0].name else board.name , foregroundColor, R.dimen.widget_title_text)
         views.setOnClickPendingIntent(R.id.list_title, getTitleIntent(context, board))
 
         setImage(context, views, R.id.refreshButt, R.drawable.ic_refresh_white_24dp)

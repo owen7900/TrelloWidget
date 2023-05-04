@@ -13,15 +13,26 @@
         android:paddingStart="@dimen/title_padding"
         android:paddingEnd="@dimen/title_padding" />
 
-    <TextView
+
+        <TextView
         android:id="@+id/card_title"
-        android:layout_width="fill_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/labels_layout"
-        android:paddingStart="@dimen/title_padding"
-        android:paddingTop="@dimen/card_padding_top"
-        android:paddingEnd="@dimen/title_padding"
-        android:text="@string/card_title" />
+            android:paddingStart="@dimen/title_padding"
+            android:paddingTop="@dimen/card_padding_top"
+            android:paddingEnd="@dimen/title_padding"
+            android:text="@string/card_title" />
+
+        <TextView
+            android:id="@+id/card_list_name"
+            android:layout_alignParentEnd="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingStart="@dimen/title_padding"
+            android:paddingTop="@dimen/card_padding_top"
+            android:paddingEnd="@dimen/title_padding"
+            android:text="@string/card_list" />
+
 
     <LinearLayout
         android:id="@+id/badges_layout"

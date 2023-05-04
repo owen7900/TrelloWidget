@@ -8,7 +8,9 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.AdapterView
+import android.widget.AdapterView.OnItemClickListener
 import android.widget.ArrayAdapter
+import android.widget.ListView
 import android.widget.Spinner
 import android.widget.Toast
 import com.android.volley.Response
@@ -18,14 +20,15 @@ import com.github.oryanmat.trellowidget.T_WIDGET
 import com.github.oryanmat.trellowidget.model.Board
 import com.github.oryanmat.trellowidget.model.BoardList
 import com.github.oryanmat.trellowidget.model.BoardList.Companion.BOARD_LIST_TYPE
+import com.github.oryanmat.trellowidget.model.BoardListList
 import com.github.oryanmat.trellowidget.util.*
 import com.github.oryanmat.trellowidget.widget.updateWidget
 import kotlinx.android.synthetic.main.activity_config.*
 
-class ConfigActivity : Activity(), OnItemSelectedAdapter, Response.Listener<String>, Response.ErrorListener {
+class ConfigActivity : Activity(), OnItemSelectedAdapter, Response.Listener<String>, Response.ErrorListener, OnItemClickListener {
     private var appWidgetId = INVALID_APPWIDGET_ID
     private var board: Board = Board()
-    private var list: BoardList = BoardList()
+    private var lists: BoardListList = BoardListList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -69,14 +72,51 @@ class ConfigActivity : Activity(), OnItemSelectedAdapter, Response.Listener<Stri
     override fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
         when (parent) {
             boardSpinner -> boardSelected(parent, position)
-            listSpinner -> list = parent.getItemAtPosition(position) as BoardList
         }
     }
 
     private fun boardSelected(spinner: AdapterView<*>, position: Int) {
         board = spinner.getItemAtPosition(position) as Board
-        list = getList(appWidgetId)
-        setSpinner(listSpinner, board.lists, this, board.lists.indexOf(list))
+        lists = getSelectedLists(appWidgetId)
+        var selectedIdxs = ArrayList<Int>()
+
+        for(i in board.lists.indices){
+            if(lists.lists.contains(board.lists[i])){
+                selectedIdxs.add(i)
+            }
+        }
+
+        setView(listListView, board.lists, this, selectedIdxs)
+    }
+
+    private fun <T> setView(listView: ListView, lists: List<T>, listener: AdapterView.OnItemClickListener, selectedIndexes: List<Int>): ListView{
+        val adapter = ArrayAdapter(this, android.R.layout.select_dialog_multichoice, lists)
+//        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+
+        listView.adapter = adapter
+        listView.onItemClickListener = listener
+        for(i in lists.indices){
+            listView.setItemChecked(i, false)
+        }
+        for(i in selectedIndexes)
+        {
+            listView.setItemChecked(i, true)
+        }
+        return listView
+    }
+
+    override fun onItemClick(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+        when (parent){
+            listListView -> {
+                var list = ArrayList<BoardList>()
+                for(i in board.lists.indices){
+                    if(listListView.isItemChecked(i)) {
+                        list.add(board.lists[i])
+                    }
+                }
+                lists = BoardListList(lists = list)
+            }
+        }
     }
 
     private fun <T> setSpinner(spinner: Spinner, lists: List<T>,
@@ -90,8 +130,12 @@ class ConfigActivity : Activity(), OnItemSelectedAdapter, Response.Listener<Stri
     }
 
     fun ok(view: View) {
-        if (board.id.isEmpty() || list.id.isEmpty()) return
-        putConfigInfo(appWidgetId, board, list)
+
+        if (board.id.isEmpty() || lists.lists.isEmpty()) {
+            Log.println(Log.ERROR, "Ok Failed", "BoardID: " + board.id + " ListsSize: " + lists.lists.size.toString())
+            return
+        }
+        putConfigInfo(appWidgetId, board, lists)
         updateWidget(appWidgetId)
         returnOk()
     }
