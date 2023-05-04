@@ -19,7 +19,7 @@ internal fun Context.getBoard(appWidgetId: Int): Board =
         get(appWidgetId, BOARD_KEY, Board.NULL_JSON, Board::class.java)
 
 private fun <T> Context.get(appWidgetId: Int, key: String, nullObject: String, c: Class<T>): T =
-        Json.fromJson(preferences().getString(prefKey(appWidgetId, key), nullObject), c)
+        Json.fromJson(preferences().getString(prefKey(appWidgetId, key), nullObject) ?: nullObject, c)
 
 internal fun Context.putConfigInfo(appWidgetId: Int, board: Board, lists: BoardListList) =
         preferences().edit()

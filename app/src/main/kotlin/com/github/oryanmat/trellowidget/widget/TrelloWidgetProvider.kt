@@ -86,24 +86,24 @@ class TrelloWidgetProvider : AppWidgetProvider() {
         val refreshIntent = Intent(context, TrelloWidgetProvider::class.java)
         refreshIntent.action = REFRESH_ACTION
         refreshIntent.putExtra(WIDGET_ID, appWidgetId)
-        return PendingIntent.getBroadcast(context, appWidgetId, refreshIntent, 0)
+        return PendingIntent.getBroadcast(context, appWidgetId, refreshIntent, PendingIntent.FLAG_MUTABLE)
     }
 
     private fun getReconfigPendingIntent(context: Context, appWidgetId: Int): PendingIntent {
         val reconfigIntent = Intent(context, ConfigActivity::class.java)
         reconfigIntent.action = AppWidgetManager.ACTION_APPWIDGET_CONFIGURE
         reconfigIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
-        return PendingIntent.getActivity(context, appWidgetId, reconfigIntent, 0)
+        return PendingIntent.getActivity(context, appWidgetId, reconfigIntent, PendingIntent.FLAG_MUTABLE)
     }
 
     private fun getCardPendingIntent(context: Context): PendingIntent {
         // individual card URIs are set in a RemoteViewsFactory.setOnClickFillInIntent
-        return PendingIntent.getActivity(context, 0, Intent(Intent.ACTION_VIEW), 0)
+        return PendingIntent.getActivity(context, 0, Intent(Intent.ACTION_VIEW), PendingIntent.FLAG_MUTABLE)
     }
 
     private fun getTitleIntent(context: Context, board: Board): PendingIntent {
         val intent = if (context.isTitleEnabled()) getBoardIntent(context, board) else Intent()
-        return PendingIntent.getActivity(context, 0, intent, 0)
+        return PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_MUTABLE)
     }
 
     private fun getBoardIntent(context: Context, board: Board) = if (!board.url.isEmpty()) {

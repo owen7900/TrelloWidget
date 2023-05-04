@@ -9,14 +9,14 @@ internal fun Context.getPrefTextScale(): Float {
     val def: String = getString(R.string.pref_text_size_default)
     val string: String = sharedPreferences().getString(
             getString(R.string.pref_text_size_key),
-            def)
+            def) ?: def
     return java.lang.Float.parseFloat(string)
 }
 
 internal fun Context.getInterval() =
         Integer.parseInt(sharedPreferences().getString(
                 getString(R.string.pref_update_interval_key),
-                getString(R.string.pref_update_interval_default)))
+                getString(R.string.pref_update_interval_default)) ?: getString(R.string.pref_update_interval_default))
 
 @ColorInt
 internal fun Context.getCardBackgroundColor() = getColor(
